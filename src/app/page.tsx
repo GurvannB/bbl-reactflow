@@ -22,8 +22,8 @@ export default function Home() {
                 nodes={nodes}
                 edges={[]}
                 onNodesChange={onNodesChange}
-                snapToGrid={true}
                 snapGrid={[10, 10]}
+                snapToGrid={true}
             >
                 <Background/>
             </ReactFlow>

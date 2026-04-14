@@ -8,12 +8,13 @@ import {
     Edge,
     EdgeChange,
     Node,
-    NodeChange,
-    NodeTypes,
+    NodeChange, NodeTypes,
+    Panel,
     ReactFlow
 } from "reactflow";
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
+import AddBunnyDialog from "@/components/dialogs/add-bunny.dialog";
 import {BunnyData} from "@/lib/types";
 import BunnyNode from "@/components/bunny-node";
 
@@ -46,6 +47,18 @@ export default function Home() {
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((prev) => applyEdgeChanges(changes, prev)), []);
     const onConnect = useCallback((params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
+    const handleAddBunny = useCallback((data: BunnyData) => {
+        onNodesChange([{
+            type: 'add',
+            item: {
+                id: crypto.randomUUID(),
+                type: 'bunny',
+                position: {x: 500, y: 500},
+                data,
+            }
+        }])
+    }, [onNodesChange]);
+
     return (
         <main className="w-full h-full">
             <ReactFlow
@@ -62,6 +75,9 @@ export default function Home() {
                 }}
             >
                 <Background/>
+                <Panel position="top-center">
+                    <AddBunnyDialog onSubmit={handleAddBunny}/>
+                </Panel>
             </ReactFlow>
         </main>
     );

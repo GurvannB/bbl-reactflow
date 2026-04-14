@@ -1,11 +1,13 @@
-import {NodeProps, NodeResizer} from "reactflow";
+import {Node, NodeProps, NodeResizer, NodeToolbar, Position} from "@xyflow/react";
 import {BunnyData} from "@/lib/types";
 import {Rabbit} from "lucide-react";
-import {clsx} from "clsx";
 
-export default function BunnyNode({data, selected}: NodeProps<BunnyData>) {
-    return <div className={clsx("w-full h-full border p-2 rounded-lg bg-white flex gap-2 items-center justify-center", selected && "border-black")}>
-        <Rabbit/> <p className="bold">{data.name}</p>
-        {selected && <NodeResizer/>}
+export default function BunnyNode({data, selected, width, height}: NodeProps<Node<BunnyData>>) {
+    return <div className="w-full h-full border p-2 rounded-lg bg-white flex gap-2 items-center justify-center">
+        <Rabbit/> <p className="bold truncate">{data.name}</p>
+        <NodeResizer isVisible={selected}/>
+        <NodeToolbar position={Position.Bottom}>
+            <p className="text-xs">{width}x{height}</p>
+        </NodeToolbar>
     </div>
 }

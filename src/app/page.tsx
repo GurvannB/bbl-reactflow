@@ -8,13 +8,12 @@ import {
     Edge,
     EdgeChange,
     Node,
-    NodeChange,
-    NodeTypes,
+    NodeChange, NodeTypes,
     Panel,
     ReactFlow,
     ReactFlowProvider,
     useReactFlow
-} from "reactflow";
+} from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
 import AddBunnyDialog from "@/components/dialogs/add-bunny.dialog";
@@ -22,16 +21,23 @@ import {BunnyData} from "@/lib/types";
 import BunnyNode from "@/components/bunny-node";
 import {Button} from "@/components/ui/button";
 
+const defaultDimensions = {
+    width: 120,
+    height: 50,
+};
+
 const defaultNodes: Node<BunnyData>[] = [
     {
         id: '1',
         type: 'bunny',
+        ...defaultDimensions,
         data: {name: 'Babul'},
         position: {x: 250, y: 250},
     },
     {
         id: '2',
         type: 'bunny',
+        ...defaultDimensions,
         data: {name: 'Gribouille'},
         position: {x: 250, y: 400},
     },
@@ -40,7 +46,7 @@ const defaultNodes: Node<BunnyData>[] = [
 const defaultEdges: Edge[] = [];
 
 const nodeTypes: NodeTypes = {
-    bunny: BunnyNode,
+    'bunny': BunnyNode,
 }
 
 export default function Home() {
@@ -56,9 +62,9 @@ function Flow() {
     const [edges, setEdges] = useState<Edge[]>(defaultEdges);
     const [toAddBunny, setToAddBunny] = useState<Node<BunnyData> | null>(null);
 
-    const {screenToFlowPosition, addNodes} = useReactFlow<BunnyData>();
+    const {screenToFlowPosition, addNodes} = useReactFlow<Node<BunnyData>>();
 
-    const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((prev) => applyNodeChanges(changes, prev)), []);
+    const onNodesChange = useCallback((changes: NodeChange<Node<BunnyData>>[]) => setNodes((prev) => applyNodeChanges(changes, prev)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((prev) => applyEdgeChanges(changes, prev)), []);
     const onConnect = useCallback((params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
@@ -66,6 +72,7 @@ function Flow() {
         setToAddBunny({
             id: crypto.randomUUID(),
             type: 'bunny',
+            ...defaultDimensions,
             position: {x: 0, y: 0},
             data,
         });

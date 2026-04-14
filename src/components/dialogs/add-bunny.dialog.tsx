@@ -20,6 +20,15 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
+import {
+    Combobox,
+    ComboboxContent,
+    ComboboxEmpty,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxList
+} from "@/components/ui/combobox";
+import {jobs} from "@/lib/constants";
 
 type Props = {
     onSubmit: (data: BunnyData) => void,
@@ -28,6 +37,7 @@ type Props = {
 
 const schema = z.object({
     name: z.string().min(1, "Le nom du lapin est requis."),
+    job: z.string().min(1, "Le métier du lapin est requis."),
 });
 
 export default function AddBunnyDialog({onSubmit, disabled}: Props) {
@@ -37,6 +47,7 @@ export default function AddBunnyDialog({onSubmit, disabled}: Props) {
         resolver: zodResolver(schema),
         defaultValues: {
             name: '',
+            job: '',
         },
         mode: "onSubmit",
     });
@@ -68,6 +79,25 @@ export default function AddBunnyDialog({onSubmit, disabled}: Props) {
                                 <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>
                             )}
                         </Field>
+                        <Combobox items={jobs}
+                                  value={form.watch('job')}
+                                  onValueChange={(value) => form.setValue('job', value ?? '')}
+                        >
+                            <ComboboxInput placeholder="Selectionnez un métier"/>
+                            <ComboboxContent>
+                                <ComboboxEmpty>Aucun résultat</ComboboxEmpty>
+                                <ComboboxList>
+                                    {(item) => (
+                                        <ComboboxItem key={item} value={item}>
+                                            {item}
+                                        </ComboboxItem>
+                                    )}
+                                </ComboboxList>
+                            </ComboboxContent>
+                        </Combobox>
+                        {!!form.formState.errors.job && (
+                            <p className="text-xs text-red-500">{form.formState.errors.job.message}</p>
+                        )}
                     </FieldGroup>
                     <DialogFooter>
                         <DialogClose render={<Button variant="outline">Annuler</Button>}/>

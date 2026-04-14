@@ -1,17 +1,16 @@
 'use client';
 import {
     addEdge,
-    applyEdgeChanges,
-    applyNodeChanges,
     Background,
-    Connection,
     Edge,
-    EdgeChange,
     Node,
-    NodeChange, NodeTypes,
+    NodeTypes,
+    OnConnect,
     Panel,
     ReactFlow,
     ReactFlowProvider,
+    useEdgesState,
+    useNodesState,
     useReactFlow
 } from "@xyflow/react";
 import '@xyflow/react/dist/style.css';
@@ -26,24 +25,24 @@ const defaultDimensions = {
     height: 50,
 };
 
-const defaultNodes: Node<BunnyData>[] = [
+const initialNodes: Node<BunnyData>[] = [
     {
         id: '1',
         type: 'bunny',
         ...defaultDimensions,
-        data: {name: 'Babul'},
+        data: {name: 'Babul', job: ''},
         position: {x: 250, y: 250},
     },
     {
         id: '2',
         type: 'bunny',
         ...defaultDimensions,
-        data: {name: 'Gribouille'},
+        data: {name: 'Gribouille', job: ''},
         position: {x: 250, y: 400},
     },
 ];
 
-const defaultEdges: Edge[] = [];
+const initialEdges: Edge[] = [];
 
 const nodeTypes: NodeTypes = {
     'bunny': BunnyNode,
@@ -58,15 +57,11 @@ export default function Home() {
 }
 
 function Flow() {
-    const [nodes, setNodes] = useState<Node<BunnyData>[]>(defaultNodes);
-    const [edges, setEdges] = useState<Edge[]>(defaultEdges);
+    const [nodes, , onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [toAddBunny, setToAddBunny] = useState<Node<BunnyData> | null>(null);
 
     const {screenToFlowPosition, addNodes} = useReactFlow<Node<BunnyData>>();
-
-    const onNodesChange = useCallback((changes: NodeChange<Node<BunnyData>>[]) => setNodes((prev) => applyNodeChanges(changes, prev)), []);
-    const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((prev) => applyEdgeChanges(changes, prev)), []);
-    const onConnect = useCallback((params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
     const handleAddBunny = useCallback((data: BunnyData) => {
         setToAddBunny({
@@ -78,7 +73,7 @@ function Flow() {
         });
     }, []);
 
-    const handleClick = useCallback((event: React.MouseEvent) => {
+    const handlePaneClick = useCallback((event: React.MouseEvent) => {
         if (toAddBunny) {
             const position = screenToFlowPosition({x: event.clientX, y: event.clientY});
             addNodes({
@@ -88,6 +83,11 @@ function Flow() {
             setToAddBunny(null);
         }
     }, [addNodes, screenToFlowPosition, toAddBunny]);
+
+    const onConnect: OnConnect = useCallback(
+        (connection) => setEdges((eds) => addEdge(connection, eds)),
+        [setEdges],
+    );
 
     return (
         <main className="w-full h-full">
@@ -103,7 +103,8 @@ function Flow() {
                 defaultEdgeOptions={{
                     type: "smoothstep",
                 }}
-                onClick={handleClick}
+                onPaneClick={handlePaneClick}
+                selectNodesOnDrag={false}
             >
                 <Background/>
                 <Panel position="top-center">

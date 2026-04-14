@@ -1,4 +1,4 @@
-import {Node, NodeProps, NodeResizer, NodeToolbar, Position} from "@xyflow/react";
+import {Handle, Node, NodeProps, NodeResizer, NodeToolbar, Position} from "@xyflow/react";
 import {BunnyData} from "@/lib/types";
 import {Rabbit} from "lucide-react";
 
@@ -9,5 +9,7 @@ export default function BunnyNode({data, selected, width, height}: NodeProps<Nod
         <NodeToolbar position={Position.Bottom}>
             <p className="text-xs">{width}x{height}</p>
         </NodeToolbar>
+        <Handle type="source" position={Position.Left}/>
+        <Handle type="target" position={Position.Right}/>
     </div>
 }

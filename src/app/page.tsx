@@ -16,7 +16,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
 import AddBunnyDialog from "@/components/dialogs/add-bunny.dialog";
-import {BunnyData} from "@/lib/types";
+import {BunnyData, EdgeData} from "@/lib/types";
 import BunnyNode from "@/components/bunny-node";
 import {Button} from "@/components/ui/button";
 
@@ -30,19 +30,46 @@ const initialNodes: Node<BunnyData>[] = [
         id: '1',
         type: 'bunny',
         ...defaultDimensions,
-        data: {name: 'Babul', job: ''},
-        position: {x: 250, y: 250},
+        data: {name: 'Nougat', job: 'Cacaoculteur'},
+        position: {x: 250, y: 200},
     },
     {
         id: '2',
         type: 'bunny',
+        width: 150,
+        height: defaultDimensions.height,
+        data: {name: 'Pistache', job: 'Cacaoculteur'},
+        position: {x: 220, y: 400},
+    },
+    {
+        id: '3',
+        type: 'bunny',
         ...defaultDimensions,
-        data: {name: 'Gribouille', job: ''},
-        position: {x: 250, y: 400},
+        data: {name: 'Sunny', job: 'Stockage'},
+        position: {x: 550, y: 300},
     },
 ];
 
-const initialEdges: Edge[] = [];
+const initialEdges: Edge<EdgeData>[] = [
+    {
+        id: 'e1-3',
+        source: '1',
+        target: '3',
+        label: '20 kg',
+        data: {
+            quantity: 20,
+        }
+    },
+    {
+        id: 'e2-3',
+        source: '2',
+        target: '3',
+        label: '30 kg',
+        data: {
+            quantity: 30,
+        }
+    }
+];
 
 const nodeTypes: NodeTypes = {
     'bunny': BunnyNode,
@@ -105,6 +132,10 @@ function Flow() {
                 }}
                 onPaneClick={handlePaneClick}
                 selectNodesOnDrag={false}
+                fitView
+                fitViewOptions={{
+                    maxZoom: 1.5,
+                }}
             >
                 <Background/>
                 <Panel position="top-center">

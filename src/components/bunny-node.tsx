@@ -9,7 +9,7 @@ export default function BunnyNode({data, selected, width, height}: NodeProps<Nod
         <NodeToolbar position={Position.Bottom}>
             <p className="text-xs">{width}x{height}</p>
         </NodeToolbar>
-        <Handle type="source" position={Position.Left}/>
-        <Handle type="target" position={Position.Right}/>
+        <Handle type="target" position={Position.Left}/>
+        <Handle type="source" position={Position.Right}/>
     </div>
 }

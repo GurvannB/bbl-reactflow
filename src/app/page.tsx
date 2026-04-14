@@ -8,15 +8,19 @@ import {
     Edge,
     EdgeChange,
     Node,
-    NodeChange, NodeTypes,
+    NodeChange,
+    NodeTypes,
     Panel,
-    ReactFlow
+    ReactFlow,
+    ReactFlowProvider,
+    useReactFlow
 } from "reactflow";
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
 import AddBunnyDialog from "@/components/dialogs/add-bunny.dialog";
 import {BunnyData} from "@/lib/types";
 import BunnyNode from "@/components/bunny-node";
+import {Button} from "@/components/ui/button";
 
 const defaultNodes: Node<BunnyData>[] = [
     {
@@ -40,24 +44,43 @@ const nodeTypes: NodeTypes = {
 }
 
 export default function Home() {
+    return (
+        <ReactFlowProvider>
+            <Flow/>
+        </ReactFlowProvider>
+    );
+}
+
+function Flow() {
     const [nodes, setNodes] = useState<Node<BunnyData>[]>(defaultNodes);
     const [edges, setEdges] = useState<Edge[]>(defaultEdges);
+    const [toAddBunny, setToAddBunny] = useState<Node<BunnyData> | null>(null);
+
+    const {screenToFlowPosition, addNodes} = useReactFlow<BunnyData>();
 
     const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((prev) => applyNodeChanges(changes, prev)), []);
     const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((prev) => applyEdgeChanges(changes, prev)), []);
     const onConnect = useCallback((params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
     const handleAddBunny = useCallback((data: BunnyData) => {
-        onNodesChange([{
-            type: 'add',
-            item: {
-                id: crypto.randomUUID(),
-                type: 'bunny',
-                position: {x: 500, y: 500},
-                data,
-            }
-        }])
-    }, [onNodesChange]);
+        setToAddBunny({
+            id: crypto.randomUUID(),
+            type: 'bunny',
+            position: {x: 0, y: 0},
+            data,
+        });
+    }, []);
+
+    const handleClick = useCallback((event: React.MouseEvent) => {
+        if (toAddBunny) {
+            const position = screenToFlowPosition({x: event.clientX, y: event.clientY});
+            addNodes({
+                ...toAddBunny,
+                position,
+            });
+            setToAddBunny(null);
+        }
+    }, [addNodes, screenToFlowPosition, toAddBunny]);
 
     return (
         <main className="w-full h-full">
@@ -73,10 +96,17 @@ export default function Home() {
                 defaultEdgeOptions={{
                     type: "smoothstep",
                 }}
+                onClick={handleClick}
             >
                 <Background/>
                 <Panel position="top-center">
-                    <AddBunnyDialog onSubmit={handleAddBunny}/>
+                    <div className="grid gap-1">
+                        <div className="flex gap-2">
+                            {!!toAddBunny && <Button onClick={() => setToAddBunny(null)}>Annuler</Button>}
+                            <AddBunnyDialog disabled={!!toAddBunny} onSubmit={handleAddBunny}/>
+                        </div>
+                        {toAddBunny && <p className="text-xs">Cliquez sur le canvas pour ajouter le nœud</p>}
+                    </div>
                 </Panel>
             </ReactFlow>
         </main>

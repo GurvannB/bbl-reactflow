@@ -23,13 +23,14 @@ import {useState} from "react";
 
 type Props = {
     onSubmit: (data: BunnyData) => void,
+    disabled: boolean,
 }
 
 const schema = z.object({
     name: z.string().min(1, "Le nom du lapin est requis."),
 });
 
-export default function AddBunnyDialog({onSubmit}: Props) {
+export default function AddBunnyDialog({onSubmit, disabled}: Props) {
     const [open, setOpen] = useState<boolean>(false);
 
     const form = useForm({
@@ -49,7 +50,8 @@ export default function AddBunnyDialog({onSubmit}: Props) {
     return (
         <Dialog open={open}
                 onOpenChange={setOpen}>
-            <DialogTrigger render={<Button variant="outline" type="button"><Plus/> Ajouter un lapin</Button>}/>
+            <DialogTrigger
+                render={<Button variant="outline" type="button" disabled={disabled}><Plus/> Ajouter un lapin</Button>}/>
             <DialogContent>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="sm:max-w-sm grid gap-4">
                     <DialogHeader>

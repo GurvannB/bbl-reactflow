@@ -27,7 +27,7 @@ export default function ConnectionLine({fromX, fromY, toX, toY}: ConnectionLineC
                 cy={toY}
                 fill="#fff"
                 r={3}
-                stroke='red'
+                stroke='gray'
                 strokeWidth={1.5}
             />
         </g>

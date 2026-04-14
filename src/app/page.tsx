@@ -19,6 +19,8 @@ import AddBunnyDialog from "@/components/dialogs/add-bunny.dialog";
 import {BunnyData, EdgeData} from "@/lib/types";
 import BunnyNode from "@/components/bunny-node";
 import {Button} from "@/components/ui/button";
+import AnimatedEdge from "@/components/animated-edge";
+import ConnectionLine from "@/components/connection-line";
 
 const defaultDimensions = {
     width: 120,
@@ -56,15 +58,17 @@ const initialEdges: Edge<EdgeData>[] = [
         source: '1',
         target: '3',
         label: '20 kg',
+        type: 'animated',
         data: {
             quantity: 20,
-        }
+        },
     },
     {
         id: 'e2-3',
         source: '2',
         target: '3',
         label: '30 kg',
+        type: 'animated',
         data: {
             quantity: 30,
         }
@@ -73,7 +77,11 @@ const initialEdges: Edge<EdgeData>[] = [
 
 const nodeTypes: NodeTypes = {
     'bunny': BunnyNode,
-}
+};
+
+const edgeTypes = {
+    'animated': AnimatedEdge
+};
 
 export default function Home() {
     return (
@@ -122,6 +130,7 @@ function Flow() {
                 nodes={nodes}
                 nodeTypes={nodeTypes}
                 edges={edges}
+                edgeTypes={edgeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
@@ -136,6 +145,7 @@ function Flow() {
                 fitViewOptions={{
                     maxZoom: 1.5,
                 }}
+                connectionLineComponent={ConnectionLine}
             >
                 <Background/>
                 <Panel position="top-center">
